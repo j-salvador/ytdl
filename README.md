@@ -13,3 +13,8 @@ install requirements:
 
 ### usage
 `python3 dl.py <url 1> <url 2> ... <url n>`
+
+### done
+deactivate the virtual environment:
+`deactivate`
+
