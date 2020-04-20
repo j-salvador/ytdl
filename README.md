@@ -1,3 +1,5 @@
+# a quick & simple video downloader
+
 ### setup
 create virtual environment:
 `python3 -m venv venv`

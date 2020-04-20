@@ -7,7 +7,7 @@ def dl_vid(url):
     yt = YouTube(url)
     print('downloading: ' + yt.title)
     yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download() 
-    print('finishedL: ' + yt.title)
+    print('finished: ' + yt.title)
 
 if __name__ == '__main__':
     ps = []
