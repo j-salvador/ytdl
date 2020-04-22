@@ -1,13 +1,37 @@
 import sys
 from multiprocessing import Process
 from pytube import YouTube
+import ffmpeg
 
 
 def dl_vid(url):
     yt = YouTube(url)
-    print('downloading: ' + yt.title)
-    yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download() 
-    print('finished: ' + yt.title)
+    title = yt.title
+    print('Downloading: ' + title)
+
+    # Check if text contains # symbol, if so replace as ffmpeg doesn't like #
+    if "#" in title:
+        title = title.replace("#", "")
+        print("AFTER: " + title)
+
+    # trim to replace whitespace with underscore
+    title_trim = "_".join(title.split())
+
+    (yt.streams.filter(progressive=True, file_extension='mp4')
+        .order_by('resolution')
+        .desc()
+        .first()
+        .download(filename=title_trim))
+
+    convert(title_trim+".mp4", title_trim+".mp3")
+    print('Finished downloading: ' + title)
+
+
+def convert(name_vid, name_sound):
+    print("name_vid:" + name_vid + "\n")
+    audio = ffmpeg.input(name_vid).audio
+    ffmpeg.output(audio, name_sound).run()
+
 
 if __name__ == '__main__':
     ps = []
@@ -18,4 +42,5 @@ if __name__ == '__main__':
    
     for p in ps:
         p.join()
-print('done!')
+
+    print('done!')
