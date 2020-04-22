@@ -7,15 +7,15 @@ import ffmpeg
 def dl_vid(url):
     yt = YouTube(url)
     title = yt.title
-    print('Downloading: ' + title)
 
     # Check if text contains # symbol, if so replace as ffmpeg doesn't like #
     if "#" in title:
         title = title.replace("#", "")
-        print("AFTER: " + title)
 
     # trim to replace whitespace with underscore
     title_trim = "_".join(title.split())
+
+    print('Downloading ' + yt.title + ' to ' + title_trim + '.mp4')
 
     (yt.streams.filter(progressive=True, file_extension='mp4')
         .order_by('resolution')
