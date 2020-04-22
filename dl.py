@@ -10,27 +10,28 @@ def dl_vid(url):
     print('Downloading: ' + title)
 
     # Check if text contains # symbol, if so replace as ffmpeg doesn't like #
-    if title.__contains__("#"):
+    if "#" in title:
         title = title.replace("#", "")
         print("AFTER: " + title)
 
     # trim to replace whitespace with underscore
     title_trim = "_".join(title.split())
 
-    yt.streams.filter(progressive=True, file_extension='mp4')\
-        .order_by('resolution')\
-        .desc()\
-        .first()\
-        .download(filename=title_trim)
+    (yt.streams.filter(progressive=True, file_extension='mp4')
+        .order_by('resolution')
+        .desc()
+        .first()
+        .download(filename=title_trim))
 
     convert(title_trim+".mp4", title_trim+".mp3")
-    print('Finished downloading: ' + yt.title)
+    print('Finished downloading: ' + title)
 
 
 def convert(name_vid, name_sound):
     print("name_vid:" + name_vid + "\n")
-    audio = ffmpeg.input(name_vid).audio.filter("aecho", 0.8, 0.9, 1000, 0.3)
+    audio = ffmpeg.input(name_vid).audio
     ffmpeg.output(audio, name_sound).run()
+
 
 if __name__ == '__main__':
     ps = []
