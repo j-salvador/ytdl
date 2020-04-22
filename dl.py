@@ -3,24 +3,33 @@ import os
 from multiprocessing import Process
 from pytube import YouTube
 
-# doesnt work with files with a '#' in their name - e.g. Bruh Sound Effect #2
-# raises issue with ffmpeg when i call .join and remove whitespace it may ignore the '#' ?
 
 def dl_vid(url):
     yt = YouTube(url)
-    print('Downloading: ' + yt.title)
+    title = yt.title
+    print('Downloading: ' + title)
 
-    title_trim = ''.join(c.lower() for c in yt.title if not c.isspace())
-    print("TITLE CUT: " + title_trim)
-    yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download(filename=title_trim)
+    # Check if text contains # symbol, if so replace as ffmpeg doesn't like #
+    if title.__contains__("#"):
+        title = title.replace("#", "")
+        print("AFTER: " + title)
+
+    # trim to replace whitespace with underscore
+    title_trim = "_".join(title.split())
+
+    yt.streams.filter(progressive=True, file_extension='mp4')\
+        .order_by('resolution')\
+        .desc()\
+        .first()\
+        .download(filename=title_trim)
 
     convert(title_trim+".mp4", title_trim+".mp3")
     print('Finished downloading: ' + yt.title)
 
 
-def convert(fname, fname_ext):
-    print("NAME 2:" + fname)
-    string = f"ffmpeg -i {fname} -vn -ab 128k -ar 44100 -y {fname_ext}"
+def convert(name_vid, name_sound):
+    print("name_vid:" + name_vid + "\n")
+    string = f"ffmpeg -i {name_vid} -vn -ab 128k -ar 44100 -y {name_sound}"
     os.system(string)
 
 
