@@ -1,7 +1,7 @@
 import sys
-import os
 from multiprocessing import Process
 from pytube import YouTube
+import ffmpeg
 
 
 def dl_vid(url):
@@ -29,9 +29,8 @@ def dl_vid(url):
 
 def convert(name_vid, name_sound):
     print("name_vid:" + name_vid + "\n")
-    string = f"ffmpeg -i {name_vid} -vn -ab 128k -ar 44100 -y {name_sound}"
-    os.system(string)
-
+    audio = ffmpeg.input(name_vid).audio.filter("aecho", 0.8, 0.9, 1000, 0.3)
+    ffmpeg.output(audio, name_sound).run()
 
 if __name__ == '__main__':
     ps = []
