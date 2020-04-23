@@ -1,4 +1,5 @@
 import sys
+import os
 from multiprocessing import Process
 from pytube import YouTube
 import ffmpeg
@@ -23,6 +24,11 @@ def dl_vid(url, mode):
         .first()
         .download(filename=title_trim))
 
+    if mode == "-audio":
+        print("Converting " + title_trim + ".mp4 to " + title_trim + ".mp3")
+        convert(title_trim + ".mp4", title_trim + ".mp3")
+        print("Removing video file")
+        os.remove(title_trim+".mp4")
     if mode == "-both":
         print("Converting " + title_trim + ".mp4 to " + title_trim + ".mp3")
         convert(title_trim+".mp4", title_trim+".mp3")
@@ -38,7 +44,12 @@ def convert(name_vid, name_sound):
 if __name__ == '__main__':
     ps = []
 
-    if sys.argv[1] == "-both":
+    if sys.argv[1] == "-audio":
+        for url in sys.argv[2:]:
+            p = Process(target=dl_vid, args=(url, "-audio"))
+            ps.append(p)
+            p.start()
+    elif sys.argv[1] == "-both":
         for url in sys.argv[2:]:
             p = Process(target=dl_vid, args=(url, "-both"))
             ps.append(p)
