@@ -4,7 +4,7 @@ from pytube import YouTube
 import ffmpeg
 
 
-def dl_vid(url):
+def dl_vid(url, mode):
     yt = YouTube(url)
     title = yt.title
 
@@ -23,23 +23,32 @@ def dl_vid(url):
         .first()
         .download(filename=title_trim))
 
-    convert(title_trim+".mp4", title_trim+".mp3")
+    if mode == "-both":
+        print("Converting " + title_trim + ".mp4 to " + title_trim + ".mp3")
+        convert(title_trim+".mp4", title_trim+".mp3")
+
     print('Finished downloading: ' + title)
 
 
 def convert(name_vid, name_sound):
-    print("name_vid:" + name_vid + "\n")
     audio = ffmpeg.input(name_vid).audio
     ffmpeg.output(audio, name_sound).run()
 
 
 if __name__ == '__main__':
     ps = []
-    for url in sys.argv[1:]:
-        p = Process(target=dl_vid, args=(url,))
-        ps.append(p)
-        p.start()
-   
+
+    if sys.argv[1] == "-both":
+        for url in sys.argv[2:]:
+            p = Process(target=dl_vid, args=(url, "-both"))
+            ps.append(p)
+            p.start()
+    else:
+        for url in sys.argv[1:]:
+            p = Process(target=dl_vid, args=(url, "-video"))
+            ps.append(p)
+            p.start()
+
     for p in ps:
         p.join()
 
